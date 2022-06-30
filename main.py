@@ -39,7 +39,7 @@ def simplify_handler():
 def derivative_handler():
     return expression_to_json(sympy.diff(parse_latex(get_expression(request)), x))
 
-@app.route('/submit', methods=['POST'])
+@app.route('/submit_work', methods=['POST'])
 def step_handler():
     step_list_json = request.json
 
@@ -54,5 +54,6 @@ def step_handler():
     # to notify the user where they went wrong.
     # This is the starting point.
     result = "true" if sympy.simplify(expressions.initial) == sympy.simplify(expressions.guess) else "false"
+    print(result)
     return jsonify({"result": result})
 app.run()
