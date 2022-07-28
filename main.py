@@ -39,11 +39,16 @@ def simplify_handler():
 def derivative_handler():
     return expression_to_json(sympy.diff(parse_latex(get_expression(request)), x))
 
+@app.route('/integral', methods=['POST'])
+def integral_handler():
+    return expression_to_json(parse_latex(get_expression(request).doit()))
+
 @app.route('/submit_work', methods=['POST'])
 def step_handler():
     step_list_json = request.json
+    print(request.json["operation"])
 
-    expressions = ExpressionList(step_list_json)
+    expressions = ExpressionList(step_list_json["steps"])
     print(f"Initial: {expressions.initial} Guess: {expressions.guess}")
 
     for step in expressions.steps:
@@ -53,6 +58,7 @@ def step_handler():
     # in the future we want to check each step as well
     # to notify the user where they went wrong.
     # This is the starting point.
+    print(sympy.simplify(expressions.initial))
     result = "true" if sympy.simplify(expressions.initial) == sympy.simplify(expressions.guess) else "false"
     print(result)
     return jsonify({"result": result})
